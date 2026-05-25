@@ -312,6 +312,12 @@ def handle_command(text, chat_id):
         subprocess.Popen(["sudo", "reboot"])
         return
 
+    if cmd_text == "/shutdown":
+        hostname = subprocess.getoutput("hostname")
+        send_message(chat_id, f"🔌 Đang tắt máy *{hostname}*...")
+        subprocess.Popen(["sudo", "systemctl", "poweroff"])
+        return
+
     if cmd_text == "/lock":
         subprocess.Popen(["sudo", "loginctl", "lock-sessions"])
         send_message(chat_id, "🔒 *Màn hình đã được khoá an toàn!*")
@@ -384,6 +390,7 @@ def handle_command(text, chat_id):
         lines.append(f"🔓 `/unlock` — Mở khóa màn hình máy tính")
         lines.append(f"📊 `/status` — Xem trạng thái máy")
         lines.append(f"🔄 `/reboot` — Khởi động lại máy")
+        lines.append(f"🔌 `/shutdown` — Tắt máy tính")
         lines.append(f"❓ `/help` — Hiện danh sách lệnh")
         send_message(chat_id, "\n".join(lines))
         return
@@ -413,6 +420,7 @@ def register_bot_commands():
     commands.append({"command": "unlock", "description": "Mở khóa màn hình"})
     commands.append({"command": "status", "description": "Xem trạng thái máy"})
     commands.append({"command": "reboot", "description": "Khởi động lại máy"})
+    commands.append({"command": "shutdown", "description": "Tắt máy tính"})
     commands.append({"command": "help", "description": "Hiện danh sách lệnh"})
 
     data = json.dumps({"commands": commands}).encode()
