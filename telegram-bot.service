@@ -1,0 +1,17 @@
+[Unit]
+Description=Telegram Bot - Remote command execution
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=avis
+ExecStart=/usr/bin/python3 /usr/local/bin/telegram-bot.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+Environment=HOME=/home/avis
+
+[Install]
+WantedBy=multi-user.target
