@@ -28,18 +28,20 @@ cd telegram_bot_control_machine
 ```
 
 ### Bước 3: Điền thông tin
-Bạn cần mở các file code và thay thế `<YOUR_BOT_TOKEN_HERE>` và `<YOUR_CHAT_ID_HERE>` bằng Token và ID bạn vừa lấy:
+Bạn cần mở các file code và thay thế `<YOUR_BOT_TOKEN_HERE>` và `<YOUR_CHAT_ID_HERE>` bằng Token và ID bạn vừa lấy. Bạn có thể thêm nhiều ID (ví dụ ID của group chat) bằng cách liệt kê chúng.
+
+**Mẹo:** Để lấy ID của một group, hãy thêm bot vào group đó và gõ lệnh `/getid`.
 
 1. Trong file `notify-boot.sh`:
 ```bash
 BOT_TOKEN="<YOUR_BOT_TOKEN_HERE>"
-CHAT_ID="<YOUR_CHAT_ID_HERE>"
+ALLOWED_CHAT_IDS=("<YOUR_CHAT_ID_HERE>" "-100123456789")
 ```
 
 2. Trong file `telegram-bot.py`:
 ```python
 BOT_TOKEN = "<YOUR_BOT_TOKEN_HERE>"
-CHAT_ID = "<YOUR_CHAT_ID_HERE>"
+ALLOWED_CHAT_IDS = ["<YOUR_CHAT_ID_HERE>", "-100123456789"]
 ```
 
 *(Lưu ý: Không đẩy các file chứa token thật của bạn lên GitHub!)*

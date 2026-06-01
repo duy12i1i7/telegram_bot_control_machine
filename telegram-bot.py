@@ -11,7 +11,7 @@ import glob
 import html as html_mod
 
 BOT_TOKEN = "<YOUR_BOT_TOKEN_HERE>"
-CHAT_ID = "<YOUR_CHAT_ID_HERE>"
+ALLOWED_CHAT_IDS = ["<YOUR_CHAT_ID_HERE>"] # VD: ["123456", "-987654321"]
 API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
 # ============================================================
@@ -157,6 +157,15 @@ def handle_command(text, chat_id):
     """Xử lý lệnh từ Telegram."""
     # Lấy phần lệnh (bỏ @botname nếu có)
     cmd_text = text.split("@")[0].strip().lower()
+
+    if cmd_text == "/getid":
+        send_message(chat_id, f"🆔 Chat ID của nhóm/user này là: `{chat_id}`")
+        return
+
+    # Từ đây trở đi, kiểm tra quyền truy cập
+    if chat_id not in ALLOWED_CHAT_IDS:
+        print(f"[WARN] Từ chối truy cập từ Chat ID lạ: {chat_id}")
+        return
 
     if cmd_text in COMMANDS:
         conf = COMMANDS[cmd_text]
@@ -392,6 +401,7 @@ def handle_command(text, chat_id):
         lines.append(f"🔄 `/reboot` — Khởi động lại máy")
         lines.append(f"🔌 `/shutdown` — Tắt máy tính")
         lines.append(f"❓ `/help` — Hiện danh sách lệnh")
+        lines.append(f"🆔 `/getid` — Lấy Chat ID hiện tại")
         send_message(chat_id, "\n".join(lines))
         return
 
@@ -449,7 +459,8 @@ def main():
         offset = updates["result"][-1]["update_id"] + 1
 
     print("[INFO] Bot sẵn sàng, đang lắng nghe lệnh...")
-    send_message(CHAT_ID, "🤖 Bot đã khởi động và sẵn sàng nhận lệnh!\nGõ /help để xem danh sách lệnh.")
+    for chat_id in ALLOWED_CHAT_IDS:
+        send_message(chat_id, "🤖 Bot đã khởi động và sẵn sàng nhận lệnh!\nGõ /help để xem danh sách lệnh.")
 
     while True:
         try:
@@ -464,10 +475,20 @@ def main():
                 text = message.get("text", "")
                 chat_id = str(message.get("chat", {}).get("id", ""))
 
-                if not text or chat_id != CHAT_ID:
+                if not text:
                     continue
 
                 if text.startswith("/"):
+                    # Check /getid FIRST before enforcing chat_id
+                    cmd_text = text.split("@")[0].strip().lower()
+                    if cmd_text == "/getid":
+                        send_message(chat_id, f"🆔 Chat ID của nhóm/user này là: `{chat_id}`")
+                        continue
+
+                    if chat_id not in ALLOWED_CHAT_IDS:
+                        print(f"[WARN] Từ chối truy cập từ Chat ID lạ: {chat_id}")
+                        continue
+
                     print(f"[CMD] {text} from {chat_id}")
                     handle_command(text, chat_id)
 

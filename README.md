@@ -28,18 +28,20 @@ cd telegram_bot_control_machine
 ```
 
 ### Step 3: Configure Information
-Open the code files and replace `<YOUR_BOT_TOKEN_HERE>` and `<YOUR_CHAT_ID_HERE>` with your actual Token and Chat ID:
+Open the code files and replace `<YOUR_BOT_TOKEN_HERE>` and `<YOUR_CHAT_ID_HERE>` with your actual Token and Chat ID. You can add multiple Chat IDs (e.g. for groups) by separating them with commas.
+
+To get a Group Chat ID, add the bot to the group and send `/getid` to it.
 
 1. In `notify-boot.sh`:
 ```bash
 BOT_TOKEN="<YOUR_BOT_TOKEN_HERE>"
-CHAT_ID="<YOUR_CHAT_ID_HERE>"
+ALLOWED_CHAT_IDS=("<YOUR_CHAT_ID_HERE>" "-100123456789")
 ```
 
 2. In `telegram-bot.py`:
 ```python
 BOT_TOKEN = "<YOUR_BOT_TOKEN_HERE>"
-CHAT_ID = "<YOUR_CHAT_ID_HERE>"
+ALLOWED_CHAT_IDS = ["<YOUR_CHAT_ID_HERE>", "-100123456789"]
 ```
 
 *(Note: Do NOT push your actual tokens to GitHub!)*

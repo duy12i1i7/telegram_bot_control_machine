@@ -2,7 +2,7 @@
 # notify-boot.sh - Send Telegram notification on boot
 
 BOT_TOKEN="<YOUR_BOT_TOKEN_HERE>"
-CHAT_ID="<YOUR_CHAT_ID_HERE>"
+ALLOWED_CHAT_IDS=("<YOUR_CHAT_ID_HERE>") # VD: ("123456" "-987654321")
 
 # Đợi network sẵn sàng
 sleep 5
@@ -17,7 +17,9 @@ MESSAGE="🟢 Máy *${HOSTNAME}* đã khởi động!
 🌐 IP: ${IP}
 ⏱ Uptime: ${UPTIME}"
 
-curl -fsS -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
-     -d "chat_id=${CHAT_ID}" \
-     -d "parse_mode=Markdown" \
-     -d "text=${MESSAGE}"
+for chat_id in "${ALLOWED_CHAT_IDS[@]}"; do
+    curl -fsS -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+         -d "chat_id=${chat_id}" \
+         -d "parse_mode=Markdown" \
+         -d "text=${MESSAGE}"
+done
