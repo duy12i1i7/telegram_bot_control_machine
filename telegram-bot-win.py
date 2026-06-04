@@ -8,7 +8,15 @@ import urllib.parse
 import time
 import os
 import glob
+import sys
+import codecs
 import html as html_mod
+
+# Sửa lỗi UnicodeEncodeError trên Windows khi in ra console
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8')
 
 BOT_TOKEN = "<YOUR_BOT_TOKEN_HERE>"
 ALLOWED_CHAT_IDS = ["<YOUR_CHAT_ID_HERE>"] # VD: ["123456", "-987654321"]
