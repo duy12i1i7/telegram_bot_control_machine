@@ -13,10 +13,12 @@ import codecs
 import html as html_mod
 
 # Sửa lỗi UnicodeEncodeError trên Windows khi in ra console
-if hasattr(sys.stdout, 'reconfigure'):
+if sys.stdout and hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8')
-if hasattr(sys.stderr, 'reconfigure'):
+if sys.stderr and hasattr(sys.stderr, 'reconfigure'):
     sys.stderr.reconfigure(encoding='utf-8')
+
+
 
 BOT_TOKEN = "<YOUR_BOT_TOKEN_HERE>"
 ALLOWED_CHAT_IDS = ["<YOUR_CHAT_ID_HERE>"] # VD: ["123456", "-987654321"]
@@ -279,9 +281,7 @@ def handle_command(text, chat_id):
         return
 
     if cmd_text == "/lock":
-        # Khoá màn hình Windows
-        subprocess.Popen(["rundll32.exe", "user32.dll,LockWorkStation"])
-        send_message(chat_id, "🔒 *Màn hình đã được khoá an toàn!*")
+        send_message(chat_id, "❌ Lệnh này không được hỗ trợ khi chạy ngầm bằng quyền SYSTEM trên Windows.")
         return
 
     if cmd_text == "/unlock":
@@ -290,10 +290,7 @@ def handle_command(text, chat_id):
 
     if cmd_text == "/status":
         hostname = subprocess.getoutput("hostname")
-        uptime_str = subprocess.getoutput('powershell -Command "(Get-Date) - (gcim Win32_OperatingSystem).LastBootUpTime | Select-Object -ExpandProperty Days,Hours,Minutes | ForEach-Object { $_ }"')
-        uptime_parts = uptime_str.split("\n")
-        if len(uptime_parts) >= 3:
-            uptime_str = f"up {uptime_parts[0]} days, {uptime_parts[1]} hours, {uptime_parts[2]} minutes"
+        uptime_str = subprocess.getoutput('powershell -Command "$ts = (Get-Date) - (gcim Win32_OperatingSystem).LastBootUpTime; Write-Output \\"up $($ts.Days) days, $($ts.Hours) hours, $($ts.Minutes) minutes\\""')
         
         ip = subprocess.getoutput('powershell -Command "Get-NetIPAddress -AddressFamily IPv4 -InterfaceAlias Tailscale* | Select-Object -ExpandProperty IPAddress"')
         if not ip:
@@ -301,10 +298,10 @@ def handle_command(text, chat_id):
             
         cpu = subprocess.getoutput('powershell -Command "(Get-WmiObject Win32_Processor | Measure-Object -Property LoadPercentage -Average).Average"') + "%"
         
-        mem_raw = subprocess.getoutput('powershell -Command "$cs = Get-CimInstance Win32_OperatingSystem; $total = [math]::Round($cs.TotalVisibleMemorySize / 1MB, 2); $free = [math]::Round($cs.FreePhysicalMemory / 1MB, 2); $used = $total - $free; $percent = [math]::Round(($used/$total)*100, 0); Write-Output \\"${used}GB / ${total}GB (${percent}%)\\""')
+        mem_raw = subprocess.getoutput('powershell -Command "$cs = Get-CimInstance Win32_OperatingSystem; $total = [math]::Round($cs.TotalVisibleMemorySize / 1MB, 2); $free = [math]::Round($cs.FreePhysicalMemory / 1MB, 2); $used = [math]::Round($total - $free, 2); $percent = [math]::Round(($used/$total)*100, 0); Write-Output \\"${used}GB / ${total}GB (${percent}%)\\""')
         mem = mem_raw.split('\n')[-1] if '\n' in mem_raw else mem_raw
         
-        disk_raw = subprocess.getoutput('powershell -Command "$d = Get-WmiObject Win32_LogicalDisk -Filter \\"DeviceID=\'C:\'\\"; $total = [math]::Round($d.Size / 1GB, 2); $free = [math]::Round($d.FreeSpace / 1GB, 2); $used = $total - $free; $percent = [math]::Round(($used/$total)*100, 0); Write-Output \\"${used}GB / ${total}GB (${percent}%)\\""')
+        disk_raw = subprocess.getoutput('powershell -Command "$d = Get-WmiObject Win32_LogicalDisk -Filter \\"DeviceID=\'C:\'\\"; $total = [math]::Round($d.Size / 1GB, 2); $free = [math]::Round($d.FreeSpace / 1GB, 2); $used = [math]::Round($total - $free, 2); $percent = [math]::Round(($used/$total)*100, 0); Write-Output \\"${used}GB / ${total}GB (${percent}%)\\""')
         disk = disk_raw.split('\n')[-1] if '\n' in disk_raw else disk_raw
 
         # GPU info
