@@ -32,13 +32,13 @@ Open the code files and replace `<YOUR_BOT_TOKEN_HERE>` and `<YOUR_CHAT_ID_HERE>
 
 To get a Group Chat ID, add the bot to the group and send `/getid` to it.
 
-1. In `notify-boot.sh`:
+1. In `notify-boot.sh` (Ubuntu):
 ```bash
 BOT_TOKEN="<YOUR_BOT_TOKEN_HERE>"
 ALLOWED_CHAT_IDS=("<YOUR_CHAT_ID_HERE>" "-100123456789")
 ```
 
-2. In `telegram-bot.py`:
+2. In `telegram-bot.py` (Ubuntu) / `telegram-bot-win.py` (Windows):
 ```python
 BOT_TOKEN = "<YOUR_BOT_TOKEN_HERE>"
 ALLOWED_CHAT_IDS = ["<YOUR_CHAT_ID_HERE>", "-100123456789"]
@@ -46,30 +46,48 @@ ALLOWED_CHAT_IDS = ["<YOUR_CHAT_ID_HERE>", "-100123456789"]
 
 *(Note: Do NOT push your actual tokens to GitHub!)*
 
-### Step 4: Deploy to System
-Run the following commands with root/sudo privileges (change `User=avis` in `telegram-bot.service` and the script paths if your system username is not `avis`):
+## Installation (Ubuntu)
 
+1. Copy files to appropriate directories:
 ```bash
-# 1. Install notify-boot script
-sudo cp notify-boot.sh /usr/local/bin/
-sudo chmod +x /usr/local/bin/notify-boot.sh
-sudo cp notify-boot.service /etc/systemd/system/
-
-# 2. Install telegram-bot script
-sudo cp telegram-bot.py /usr/local/bin/
+sudo cp telegram-bot.py /usr/local/bin/telegram-bot.py
 sudo chmod +x /usr/local/bin/telegram-bot.py
+
+sudo cp notify-boot.sh /usr/local/bin/notify-boot.sh
+sudo chmod +x /usr/local/bin/notify-boot.sh
+
 sudo cp telegram-bot.service /etc/systemd/system/
+sudo cp notify-boot.service /etc/systemd/system/
+```
 
-# 3. Grant sudo privileges (No password required) to the bot
-# Open the sudoers file using: sudo visudo -f /etc/sudoers.d/telegram-bot
-# Add the following line (replace 'avis' with your actual username):
-# avis ALL=(ALL) NOPASSWD: /usr/bin/systemctl, /usr/sbin/reboot, /usr/bin/loginctl
+2. Set up sudo permissions (IMPORTANT for safe reboot/services control):
+Create a file `/etc/sudoers.d/avis-bot`:
+```bash
+avis ALL=(ALL) NOPASSWD: /usr/bin/systemctl, /usr/sbin/reboot, /usr/bin/loginctl, /usr/sbin/grub-reboot
+```
 
-# 4. Enable and start the services
+3. Enable and start services:
+```bash
 sudo systemctl daemon-reload
-sudo systemctl enable notify-boot.service
 sudo systemctl enable telegram-bot.service
 sudo systemctl start telegram-bot.service
+sudo systemctl enable notify-boot.service
+```
+
+## Installation (Windows)
+
+1. Install Python 3 on Windows.
+2. Open PowerShell as Admin and install `requests`:
+```powershell
+pip install requests
+```
+3. Create folder `C:\Bot` and copy `telegram-bot-win.py` into it.
+4. Set up Task Scheduler to run at startup:
+```powershell
+$action = New-ScheduledTaskAction -Execute "C:\Program Files\Python312\pythonw.exe" -Argument "C:\Bot\telegram-bot-win.py"
+$trigger = New-ScheduledTaskTrigger -AtStartup
+$principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+Register-ScheduledTask -TaskName "TelegramBot" -Action $action -Trigger $trigger -Principal $principal -Force
 ```
 
 Done! Open the Telegram chat with your bot and send `/start` or `/help` to view the list of commands.
