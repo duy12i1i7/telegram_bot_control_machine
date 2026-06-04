@@ -287,10 +287,9 @@ def handle_command(text, chat_id):
         return
 
     if cmd_text == "/unlock":
-        # Dùng trick tscon của quyền SYSTEM để bypass màn hình khoá
-        ps_cmd = "$sessions = query session; $id = $sessions | Select-String 'console' | ForEach-Object { ($_ -split '\\s+')[2] }; if ($id) { tscon $id /dest:console }"
-        subprocess.Popen(["powershell", "-Command", ps_cmd])
-        send_message(chat_id, "🔓 *Đang ép mở khoá màn hình (Bypass Lock Screen)...*")
+        # Gọi Task chạy ngầm bằng quyền SYSTEM để kích hoạt lệnh tscon bypass màn hình khoá
+        subprocess.Popen(["powershell", "-Command", "Start-ScheduledTask -TaskName 'TelegramBot_Unlock'"])
+        send_message(chat_id, "🔓 *Đang ép mở khoá màn hình (Bypass Lock Screen) bằng quyền SYSTEM...*")
         return
 
     if cmd_text == "/status":
