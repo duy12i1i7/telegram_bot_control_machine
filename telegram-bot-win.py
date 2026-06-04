@@ -286,11 +286,7 @@ def handle_command(text, chat_id):
         send_message(chat_id, "🔒 *Màn hình đã được khoá an toàn!*")
         return
 
-    if cmd_text == "/unlock":
-        # Gọi Task chạy ngầm bằng quyền SYSTEM để kích hoạt lệnh tscon bypass màn hình khoá
-        subprocess.Popen(["powershell", "-Command", "Start-ScheduledTask -TaskName 'TelegramBot_Unlock'"])
-        send_message(chat_id, "🔓 *Đang ép mở khoá màn hình (Bypass Lock Screen) bằng quyền SYSTEM...*")
-        return
+
 
     if cmd_text == "/status":
         hostname = subprocess.getoutput("hostname")
@@ -348,7 +344,6 @@ def handle_command(text, chat_id):
         lines.append(f"    _VD: /svc restart docker_")
         lines.append(f"    _Actions: start, stop, restart, enable, disable, log, info_")
         lines.append(f"🔒 `/lock` — Khóa màn hình")
-        lines.append(f"🔓 `/unlock` — Mở khóa màn hình")
         lines.append(f"📊 `/status` — Xem trạng thái máy")
         lines.append(f"🔄 `/reboot` — Khởi động lại máy")
         lines.append(f"🔌 `/shutdown` — Tắt máy tính")
@@ -383,7 +378,6 @@ def register_bot_commands():
     commands.append({"command": "services", "description": "Xem tất cả services"})
     commands.append({"command": "svc", "description": "Điều khiển service (start/stop/restart/...)" })
     commands.append({"command": "lock", "description": "Khóa màn hình (Windows)"})
-    commands.append({"command": "unlock", "description": "Mở khóa màn hình"})
     commands.append({"command": "status", "description": "Xem trạng thái máy"})
     commands.append({"command": "reboot", "description": "Khởi động lại máy"})
     commands.append({"command": "shutdown", "description": "Tắt máy tính"})
