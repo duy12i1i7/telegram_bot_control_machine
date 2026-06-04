@@ -270,14 +270,9 @@ def handle_command(text, chat_id):
         return
 
     if cmd_text == "/switch_to_linux":
-        hostname = subprocess.getoutput("hostname")
-        send_message(chat_id,
-            f"🐧 Chuyển sang *Ubuntu*...\n"
-            f"Máy *{hostname}* sẽ reboot vào Ubuntu (mặc định GRUB).\n"
-            f"Sau khi boot xong, bot sẽ tự gửi thông báo."
-        )
-        time.sleep(1)
-        subprocess.Popen(["shutdown", "/r", "/t", "0"])
+        send_message(chat_id, "🔄 *Đang chuyển sang Ubuntu...*")
+        subprocess.run(["bcdedit", "/bootsequence", "{8a6ef682-5faa-11f1-ad70-806e6f6e6963}"])
+        subprocess.run(["shutdown", "/r", "/t", "0"])
         return
 
     if cmd_text == "/lock":
