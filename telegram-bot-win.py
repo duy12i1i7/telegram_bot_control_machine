@@ -287,15 +287,11 @@ def handle_command(text, chat_id):
         send_message(chat_id, "🔒 *Màn hình đã được khoá an toàn!*")
         return
 
-    if cmd_text == "/sleep":
-        # Lệnh đưa Windows vào chế độ Sleep an toàn qua .NET
-        ps_cmd = "Add-Type -Assembly System.Windows.Forms; [System.Windows.Forms.Application]::SetSuspendState('Suspend', $false, $false)"
-        send_message(chat_id, "🌙 *Đang đưa máy vào chế độ Sleep...*")
-        subprocess.Popen(["powershell", "-Command", ps_cmd])
-        return
-
     if cmd_text == "/unlock":
-        send_message(chat_id, "❌ Lệnh unlock không hỗ trợ trên Windows vì lý do bảo mật.")
+        # Dùng trick tscon của quyền SYSTEM để bypass màn hình khoá
+        ps_cmd = "$sessions = query session; $id = $sessions | Select-String 'console' | ForEach-Object { ($_ -split '\\s+')[2] }; if ($id) { tscon $id /dest:console }"
+        subprocess.Popen(["powershell", "-Command", ps_cmd])
+        send_message(chat_id, "🔓 *Đang ép mở khoá màn hình (Bypass Lock Screen)...*")
         return
 
     if cmd_text == "/status":
@@ -354,7 +350,6 @@ def handle_command(text, chat_id):
         lines.append(f"    _VD: /svc restart docker_")
         lines.append(f"    _Actions: start, stop, restart, enable, disable, log, info_")
         lines.append(f"🔒 `/lock` — Khóa màn hình")
-        lines.append(f"🌙 `/sleep` — Sleep máy tính")
         lines.append(f"🔓 `/unlock` — Mở khóa màn hình")
         lines.append(f"📊 `/status` — Xem trạng thái máy")
         lines.append(f"🔄 `/reboot` — Khởi động lại máy")
@@ -390,7 +385,7 @@ def register_bot_commands():
     commands.append({"command": "services", "description": "Xem tất cả services"})
     commands.append({"command": "svc", "description": "Điều khiển service (start/stop/restart/...)" })
     commands.append({"command": "lock", "description": "Khóa màn hình (Windows)"})
-    commands.append({"command": "sleep", "description": "Ngủ đông (Sleep) máy tính"})
+    commands.append({"command": "unlock", "description": "Mở khóa màn hình"})
     commands.append({"command": "status", "description": "Xem trạng thái máy"})
     commands.append({"command": "reboot", "description": "Khởi động lại máy"})
     commands.append({"command": "shutdown", "description": "Tắt máy tính"})
