@@ -281,9 +281,8 @@ def handle_command(text, chat_id):
         return
 
     if cmd_text == "/lock":
-        # Tìm session console đang active và ngắt kết nối (tương đương màn hình khoá)
-        ps_cmd = "$sessions = query session; $id = $sessions | Select-String 'console' | Select-String 'Active' | ForEach-Object { ($_ -split '\\s+')[2] }; if ($id) { tsdiscon $id }"
-        subprocess.Popen(["powershell", "-Command", ps_cmd])
+        # Khoá màn hình Windows bằng quyền Interactive User (Cách B)
+        subprocess.Popen(["rundll32.exe", "user32.dll,LockWorkStation"])
         send_message(chat_id, "🔒 *Màn hình đã được khoá an toàn!*")
         return
 
