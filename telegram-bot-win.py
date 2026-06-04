@@ -271,7 +271,7 @@ def handle_command(text, chat_id):
 
     if cmd_text == "/switch_to_linux":
         send_message(chat_id, "🔄 *Đang chuyển sang Ubuntu...*")
-        subprocess.run('powershell -Command "bcdedit /bootsequence \'{8a6ef682-5faa-11f1-ad70-806e6f6e6963}\'; Restart-Computer -Force"', shell=True)
+        subprocess.run('powershell -Command "bcdedit /set \\"{fwbootmgr}\\" bootsequence \\"{8a6ef682-5faa-11f1-ad70-806e6f6e6963}\\"; shutdown.exe /r /t 0"', shell=True)
         return
 
     if cmd_text == "/lock":
